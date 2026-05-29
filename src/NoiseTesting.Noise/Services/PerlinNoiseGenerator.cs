@@ -43,7 +43,6 @@ public class PerlinNoiseGenerator
             for (int i = 0; i < octaves; i++)
             {
                 int j = steps / (int)float.Pow(2, i);
-                int gradientsSize = (size / j) + 1;
                 float[,] octave = GenerateNoiseLevel(j, posX, posY, size);
                 octaveLayers.Add(octave);
             }
