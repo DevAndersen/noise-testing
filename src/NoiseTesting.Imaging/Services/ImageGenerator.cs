@@ -6,9 +6,6 @@ public class ImageGenerator
 {
     public byte[] Generate(float[,] grid)
     {
-        float min = -float.Sqrt(2);
-        float max = float.Sqrt(2);
-
         using SKBitmap bitmap = new SKBitmap(grid.GetLength(0), grid.GetLength(1));
 
         for (int y = 0; y < grid.GetLength(1); y++)
@@ -16,8 +13,7 @@ public class ImageGenerator
             for (int x = 0; x < grid.GetLength(0); x++)
             {
                 float value = grid[x, y];
-                float relative = (value - min) / (max - min);
-                float progress = Sigmoid(relative, 2.5F, 0.0F);
+                float progress = Sigmoid(value, 2.5F, 0.0F);
                 byte colorValue = (byte)float.Lerp(byte.MinValue, byte.MaxValue, progress);
 
                 SKColor color = progress switch

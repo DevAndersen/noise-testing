@@ -7,9 +7,22 @@ namespace NoiseTesting.Noise.Services;
 public class PerlinNoiseGenerator
 {
     /// <summary>
-    /// Square root of 16 (the size of the vector output size).
+    /// The size of each vector tile.
+    /// Square root of 16, (the number of bytes of an MD5 digest).
     /// </summary>
-    private const int _tileSize = 4;
+    private static readonly int _tileSize = (int)float.Sqrt(MD5.HashSizeInBytes);
+
+    /// <summary>
+    /// The largest negative grid value.
+    /// Distance from one corner to the opposite corner.
+    /// </summary>
+    private static readonly float _minGridValue = -float.Sqrt(2);
+
+    /// <summary>
+    /// The largest positive grid value.
+    /// Distance from one corner to the opposite corner.
+    /// </summary>
+    private static readonly float _maxGridValue = float.Sqrt(2);
 
     /// <summary>
     /// Store for calculated noise vectors.
@@ -27,32 +40,40 @@ public class PerlinNoiseGenerator
     /// Generate multi-octave noise.
     /// </summary>
     /// <param name="size"></param>
-    /// <param name="steps"></param>
+    /// <param name="density"></param>
     /// <param name="octaves"></param>
     /// <param name="posX"></param>
     /// <param name="posY"></param>
     /// <returns></returns>
-    public float[,] GenerateNoise(int size, int steps, int octaves, int posX, int posY)
+    public float[,] GenerateNoise(int size, int density, int octaves, int posX, int posY)
     {
         float[,] grid = new float[size, size];
+        List<float[,]> octaveLayers = [];
 
-        for (int seed = 0; seed < 1; seed++)
+        // Generate the noise octave layers.
+        for (int i = 0; i < octaves; i++)
         {
-            List<float[,]> octaveLayers = [];
+            int steps = density / (int)float.Pow(2, i);
+            float[,] octave = GenerateNoiseLevel(steps, posX, posY, size);
+            octaveLayers.Add(octave);
+        }
 
-            for (int i = 0; i < octaves; i++)
+        // Accumulate the layers, with diminishing impact.
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
             {
-                int j = steps / (int)float.Pow(2, i);
-                float[,] octave = GenerateNoiseLevel(j, posX, posY, size);
-                octaveLayers.Add(octave);
+                grid[x, y] = octaveLayers.Select((o, i) => o[x, y] * (1 / float.Pow(2, i))).Sum();
             }
+        }
 
-            for (int y = 0; y < size; y++)
+        // Normalizes the grid to [0, 1].
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
             {
-                for (int x = 0; x < size; x++)
-                {
-                    grid[x, y] = octaveLayers.Select((o, i) => o[x, y] * (1 / float.Pow(2, i))).Sum();
-                }
+                float value = grid[x, y];
+                grid[x, y] = (value - _minGridValue) / (_maxGridValue - _minGridValue);
             }
         }
 
