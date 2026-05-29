@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="src/NoiseTesting.Imaging/NoiseTesting.Imaging.csproj" Id="f05234f1-588a-480e-8cc4-b92b9041b065" />
+  <Project Path="src/NoiseTesting.Noise/NoiseTesting.Noise.csproj" Id="9607e451-7bf8-4213-9b99-87d753f39ceb" />
   <Project Path="src/NoiseTesting.Web/NoiseTesting.Web.csproj" Id="539d0f5a-c63b-4710-8272-32a119c5a830" />
 </Solution>

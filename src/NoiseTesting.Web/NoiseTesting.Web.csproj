@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NoiseTesting.Imaging\NoiseTesting.Imaging.csproj" />
+    <ProjectReference Include="..\NoiseTesting.Noise\NoiseTesting.Noise.csproj" />
   </ItemGroup>
 
 </Project>

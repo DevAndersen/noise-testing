@@ -1,4 +1,3 @@
-using NoiseTesting.Imaging.Services;
 using NoiseTesting.Web.Components;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -6,9 +5,6 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
-builder.Services
-    .AddScoped<ImageGenerator>();
 
 WebApplication app = builder.Build();
 
