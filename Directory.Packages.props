@@ -1,5 +1,6 @@
 <Project>
   <ItemGroup>
     <PackageVersion Include="SkiaSharp" Version="3.119.4" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.4" />
   </ItemGroup>
 </Project>
