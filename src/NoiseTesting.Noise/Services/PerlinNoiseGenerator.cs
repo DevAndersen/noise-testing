@@ -45,7 +45,7 @@ public class PerlinNoiseGenerator
     /// <param name="posX"></param>
     /// <param name="posY"></param>
     /// <returns></returns>
-    public float[,] GenerateNoise(int size, int density, int octaves, int posX, int posY)
+    public float[,] GenerateNoise(int size, int density, int octaves, int posX, int posY, Func<float, float>? transformFunc = null)
     {
         float[,] grid = new float[size, size];
         List<float[,]> octaveLayers = [];
@@ -67,13 +67,17 @@ public class PerlinNoiseGenerator
             }
         }
 
-        // Normalizes the grid to [0, 1].
+        // Normalizes the grid to [0, 1], then apply the transform function if it has been defined.
         for (int y = 0; y < size; y++)
         {
             for (int x = 0; x < size; x++)
             {
                 float value = grid[x, y];
                 grid[x, y] = (value - _minGridValue) / (_maxGridValue - _minGridValue);
+                if (transformFunc != null)
+                {
+                    grid[x, y] = transformFunc(grid[x, y]);
+                }
             }
         }
 

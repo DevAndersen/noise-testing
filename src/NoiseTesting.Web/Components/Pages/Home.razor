@@ -12,12 +12,17 @@
 
 @code
 {
-	private byte[] GenerateNoiseImage()
+	private static byte[] GenerateNoiseImage()
 	{
 		ImageGenerator imageGenerator = new ImageGenerator();
 		PerlinNoiseGenerator noiseGenerator = new PerlinNoiseGenerator(3);
 
-		float[,] noise = noiseGenerator.GenerateNoise(256, 64, 5, 0, 0);
+		float[,] noise = noiseGenerator.GenerateNoise(256, 64, 5, 0, 0, f => Sigmoid(f, 2.5F, 0.0F));
 		return imageGenerator.Generate(noise);
+	}
+
+	private static float Sigmoid(float x, float mult, float bias)
+	{
+		return 1 / (1 + float.Pow(float.E, -bias + -x * (mult * 2) + mult));
 	}
 }
