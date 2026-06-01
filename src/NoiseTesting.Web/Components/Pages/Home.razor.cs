@@ -98,6 +98,11 @@ public partial class Home
         };
     }
 
+    /// <summary>
+    /// Calculate the average of corresponding values across <paramref name="grids"/>.
+    /// </summary>
+    /// <param name="grids"></param>
+    /// <returns></returns>
     private static float[,] Combine(params float[][,] grids)
     {
         int width = grids[0].GetLength(0);
@@ -118,11 +123,27 @@ public partial class Home
         return result;
     }
 
+    /// <summary>
+    /// Sigmoid function with adjustable multiplier (how steep the curve is) and bias (shifts the middle point of the curve).
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="mult"></param>
+    /// <param name="bias"></param>
+    /// <returns></returns>
     private static float Sigmoid(float x, float mult, float bias)
     {
         return 1 / (1 + float.Pow(float.E, -bias + -x * (mult * 2) + mult));
     }
 
+    /// <summary>
+    /// Sigmoid function with adjustable multiplier (how steep the curve is), bias (shifts the middle point of the curve), minimum, and maximum.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="mult"></param>
+    /// <param name="bias"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
     private static float SigmoidMinMax(float x, float mult, float bias, float min, float max)
     {
         float sigmoid = Sigmoid(x, mult, bias);
