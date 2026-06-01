@@ -2,9 +2,9 @@
 
 namespace NoiseTesting.Imaging.Services;
 
-public class ImageGenerator
+public static class ImageGenerator
 {
-    public byte[] Generate(float[,] grid, Func<int, int, float, SKColor> colorFunc)
+    public static byte[] Generate(float[,] grid, Func<int, int, float, SKColor> colorFunc)
     {
         using SKBitmap bitmap = new SKBitmap(grid.GetLength(0), grid.GetLength(1));
 
