@@ -3,17 +3,47 @@ body
     margin: 2rem;
     background: #aaa;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    font-size: 18px;
 }
 
-.tiles
+.group
 {
-    margin: auto;
+    background: #767676;
+    border-radius: 0 8px 8px 8px;
+    padding: 16px;
+    font-size: 18px;
+    margin: auto auto 32px auto;
+}
+
+.group-name
+{
+    font-size: 22px;
+    text-align: center;
+    background: #767676;
+    border-radius: 8px 8px 0 0;
+    display: inline-block;
+    padding: 8px;
+}
+
+.layer-tiles
+{
     display: flex;
     justify-content: center;
     display: grid;
     grid-template-columns: repeat(auto-fit, 256px);
     gap: 8px;
+
+    & img
+    {
+        margin-bottom: 8px;
+    }
+}
+
+.grid-tiles
+{
+    display: flex;
+    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(var(--columns), 256px);
 }
 
 .tile
@@ -25,11 +55,11 @@ body
 
 .tile-name
 {
+    font-size: 18px;
     text-align: center;
 }
 
 img
 {
     border: 1px solid #000;
-    margin-bottom: 8px;
 }

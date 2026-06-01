@@ -2,9 +2,10 @@
 
 <PageTitle>Home</PageTitle>
 
-<div class="tiles">
+<div class="group-name">Layers</div>
+<div class="layer-tiles group">
 
-	@foreach ((string LayerName, byte[] ImageBytes) in GenerateNoiseImages())
+	@foreach ((string LayerName, byte[] ImageBytes) in GenerateNoiseImages(256, 0, 0))
 	{
 		<div class="tile">
 			<div class="tile-name">@LayerName</div>
@@ -13,3 +14,26 @@
 	}
 
 </div>
+
+<div class="group-name">Grids</div>
+<div class="grid-tiles group" style="--columns: @_width">
+	@{
+		int size = 256;
+
+		for (int y = 0; y < _height; y++)
+		{
+			for (int x = 0; x < _width; x++)
+			{
+				byte[] imageBytes = GenerateTerrainImages(size, x * size, y * size);
+				<img src="data:image/png;base64,@Convert.ToBase64String(imageBytes)" alt="Terrain tile" />
+			}
+		}
+	}
+
+</div>
+
+@code
+{
+	private int _width = 2;
+	private int _height = 2;
+}
