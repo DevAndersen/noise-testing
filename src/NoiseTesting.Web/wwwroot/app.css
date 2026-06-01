@@ -1,7 +1,9 @@
 body
 {
     margin: 2rem;
-    background: #666;
+    background: #aaa;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 18px;
 }
 
 .tiles
@@ -9,4 +11,25 @@ body
     margin: auto;
     display: flex;
     justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 256px);
+    gap: 8px;
+}
+
+.tile
+{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tile-name
+{
+    text-align: center;
+}
+
+img
+{
+    border: 1px solid #000;
+    margin-bottom: 8px;
 }

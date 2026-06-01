@@ -1,28 +1,15 @@
 ﻿@page "/"
-@using NoiseTesting.Imaging.Services
-@using NoiseTesting.Noise.Services
 
 <PageTitle>Home</PageTitle>
 
 <div class="tiles">
 
-	<img src="data:image/png;base64,@Convert.ToBase64String(GenerateNoiseImage())" style="border: 1px solid #000" alt=""/>
+	@foreach ((string LayerName, byte[] ImageBytes) in GenerateNoiseImages())
+	{
+		<div class="tile">
+			<div class="tile-name">@LayerName</div>
+			<img src="data:image/png;base64,@Convert.ToBase64String(ImageBytes)" alt="Noise layer @LayerName" />
+		</div>
+	}
 
 </div>
-
-@code
-{
-	private static byte[] GenerateNoiseImage()
-	{
-		ImageGenerator imageGenerator = new ImageGenerator();
-		PerlinNoiseGenerator noiseGenerator = new PerlinNoiseGenerator(3);
-
-		float[,] noise = noiseGenerator.GenerateNoise(256, 64, 5, 0, 0, f => Sigmoid(f, 2.5F, 0.0F));
-		return imageGenerator.Generate(noise);
-	}
-
-	private static float Sigmoid(float x, float mult, float bias)
-	{
-		return 1 / (1 + float.Pow(float.E, -bias + -x * (mult * 2) + mult));
-	}
-}
