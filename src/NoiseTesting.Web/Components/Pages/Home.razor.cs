@@ -32,7 +32,7 @@ public partial class Home
         float[,] color = Combine(terrainNoise, landNoise, mountainNoise);
         yield return new ImageLayer("Color", ImageGenerator.Generate(color, (_, _, value) => TerrainColor(value)));
 
-        yield return new ImageLayer("Color with temperature", ImageGenerator.Generate(color, (x, y, value) => TerrainTemperatureColor(value, temperatureNoise[x, y], riverNoise[x, y])));
+        yield return new ImageLayer("Color with features", ImageGenerator.Generate(color, (x, y, value) => TerrainTemperatureColor(value, temperatureNoise[x, y], riverNoise[x, y])));
     }
 
     private static byte[] GenerateTerrainImages(int size, int posX, int posY)
