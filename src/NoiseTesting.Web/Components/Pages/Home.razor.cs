@@ -37,27 +37,25 @@ public partial class Home
 
     private static byte[] GenerateTerrainImages(int size, int posX, int posY)
     {
-        _ = size;
-        _ = posX;
-        _ = posY;
-        return [];
+        PerlinNoiseGenerator terrainNoiseGenerator = new PerlinNoiseGenerator(1);
+        PerlinNoiseGenerator landNoiseGenerator = new PerlinNoiseGenerator(3);
+        PerlinNoiseGenerator mountainNoiseGenerator = new PerlinNoiseGenerator(4);
+        PerlinNoiseGenerator temperatureNoiseGenerator = new PerlinNoiseGenerator(5);
+        PerlinNoiseGenerator riverNoiseGenerator = new PerlinNoiseGenerator(7);
 
-        //PerlinNoiseGenerator terrainNoiseGenerator = new PerlinNoiseGenerator(1);
-        //PerlinNoiseGenerator landNoiseGenerator = new PerlinNoiseGenerator(3);
-        //PerlinNoiseGenerator mountainNoiseGenerator = new PerlinNoiseGenerator(4);
-        //PerlinNoiseGenerator temperatureNoiseGenerator = new PerlinNoiseGenerator(5);
+        float[,] terrainNoise = terrainNoiseGenerator.GenerateNoise(size, 64, 5, posX, posY, f => Sigmoid(f, 2.5F, 0.0F));
 
-        //float[,] terrainNoise = terrainNoiseGenerator.GenerateNoise(size, 64, 5, posX, posY, f => Sigmoid(f, 2.5F, 0.0F));
+        float[,] landNoise = landNoiseGenerator.GenerateNoise(size, 256, 6, posX, posY, f => SigmoidMinMax(f, mult: 20, bias: -1.0F, min: 0.0F, max: 1.0F));
 
-        //float[,] landNoise = landNoiseGenerator.GenerateNoise(size, 256, 6, posX, posY, f => SigmoidMinMax(f, mult: 20, bias: -1.0F, min: 0.0F, max: 1.0F));
+        float[,] mountainNoise = mountainNoiseGenerator.GenerateNoise(size, 126, 4, posX, posY, f => SigmoidMinMax(f, mult: 15.0F, bias: -2.0F, min: 0.0F, max: 1.0F));
 
-        //float[,] mountainNoise = mountainNoiseGenerator.GenerateNoise(size, 126, 4, posX, posY, f => SigmoidMinMax(f, mult: 15.0F, bias: -2.0F, min: 0.0F, max: 1.0F));
+        float[,] temperatureNoise = temperatureNoiseGenerator.GenerateNoise(size, 128, 3, posX, posY, f => Sigmoid(f, 10.5F, 0.0F));
 
-        //float[,] temperatureNoise = temperatureNoiseGenerator.GenerateNoise(size, 128, 3, posX, posY, f => Sigmoid(f, 10.5F, 0.0F));
+        float[,] color = Combine(terrainNoise, landNoise, mountainNoise);
 
-        //float[,] color = Combine(terrainNoise, landNoise, mountainNoise);
+        float[,] riverNoise = riverNoiseGenerator.GenerateNoise(size, 64, 5, posX, posY, f => Sigmoid(f, 2.5F, 0.0F));
 
-        //return ImageGenerator.Generate(color, (x, y, value) => TerrainTemperatureColor(value, temperatureNoise[x, y]));
+        return ImageGenerator.Generate(color, (x, y, value) => TerrainTemperatureColor(value, temperatureNoise[x, y], riverNoise[x, y]));
     }
 
     private static SKColor GradientColor(float value)
