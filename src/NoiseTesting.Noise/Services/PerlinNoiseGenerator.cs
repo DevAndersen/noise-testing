@@ -27,7 +27,7 @@ public class PerlinNoiseGenerator
     /// <summary>
     /// Store for calculated noise vectors.
     /// </summary>
-    private readonly Dictionary<Point, Vector2[,]> _vectorStore = [];
+    private readonly Dictionary<Point, Vector2> _vectorStore = [];
 
     private readonly int _seed;
 
@@ -128,23 +128,32 @@ public class PerlinNoiseGenerator
     /// <returns></returns>
     private Vector2 GetVector(int x, int y)
     {
-        int tileX = x / _tileSize;
-        int tileY = y / _tileSize;
-
-        Point point = new Point(tileX, tileY);
-
         // Generate the vector tile if it has not yet been generated.
-        if (!_vectorStore.TryGetValue(point, out Vector2[,]? tile))
+        if (!_vectorStore.TryGetValue(new Point(x, y), out Vector2 vector))
         {
-            Vector2[,] vectors = new Vector2[_tileSize, _tileSize];
-            Span<Vector2> vectorSpan = MemoryMarshal.CreateSpan(ref vectors[0, 0], vectors.Length);
+            int tileX = x / _tileSize;
+            int tileY = y / _tileSize;
 
-            Span<byte> buffer = stackalloc byte[MD5.HashSizeInBytes];
-            PopulateNoiseVectors(vectorSpan, buffer, [tileX, tileY, _seed]);
-            tile = _vectorStore[point] = vectors;
+            Vector2[,] vectors = new Vector2[_tileSize, _tileSize];
+
+            Span<Vector2> vectorSpan = MemoryMarshal.CreateSpan(ref vectors[0, 0], vectors.Length);
+            Span<byte> workBuffer = stackalloc byte[MD5.HashSizeInBytes];
+            PopulateNoiseVectors(vectorSpan, workBuffer, [tileX, tileY, _seed]);
+
+            for (int relativeY = 0; relativeY < _tileSize; relativeY++)
+            {
+                for (int relativeX = 0; relativeX < _tileSize; relativeX++)
+                {
+                    int vectorX = (tileX * _tileSize) + relativeX;
+                    int vectorY = (tileY * _tileSize) + relativeY;
+                    _vectorStore[new Point(vectorX, vectorY)] = vectors[relativeX, relativeY];
+                }
+            }
+
+            vector = vectors[x % _tileSize, y % _tileSize];
         }
 
-        return tile[x % _tileSize, y % _tileSize];
+        return vector;
     }
 
     /// <summary>
