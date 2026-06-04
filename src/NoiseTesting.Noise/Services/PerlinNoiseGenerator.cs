@@ -47,55 +47,53 @@ public class PerlinNoiseGenerator
     /// <returns></returns>
     public float[,] GenerateNoise(int size, int density, int octaves, int posX, int posY, Func<float, float>? transformFunc = null)
     {
-        float[,] grid = new float[size, size];
-        List<float[,]> octaveLayers = [];
+        float[,] floatGrid = new float[size, size];
+        Span<float> grid = MemoryMarshal.CreateSpan(ref floatGrid[0, 0], floatGrid.Length);
+
+
+        float[] octaveLayers = new float[size * size * octaves];
 
         // Generate the noise octave layers.
         for (int i = 0; i < octaves; i++)
         {
             int steps = density / (int)float.Pow(2, i);
-            float[,] octave = GenerateNoiseLevel(steps, posX, posY, size);
-            octaveLayers.Add(octave);
-        }
 
-        // Accumulate the layers, with diminishing impact.
-        for (int y = 0; y < size; y++)
-        {
-            for (int x = 0; x < size; x++)
+            int octaveSliceLength = size * size;
+
+            Span<float> octave = octaveLayers.AsSpan().Slice(octaveSliceLength * i, octaveSliceLength);
+            GenerateNoiseLevel(octave, steps, posX, posY, size);
+
+            // Accumulate the layers, with diminishing impact.
+            for (int j = 0; j < grid.Length; j++)
             {
-                grid[x, y] = octaveLayers.Select((o, i) => o[x, y] * (1 / float.Pow(2, i))).Sum();
+                grid[j] += octave[j] * (1 / float.Pow(2, i));
             }
         }
 
         // Normalizes the grid to [0, 1], then apply the transform function if it has been defined.
-        for (int y = 0; y < size; y++)
+        for (int i = 0; i < grid.Length; i++)
         {
-            for (int x = 0; x < size; x++)
+            float value = grid[i];
+            grid[i] = (value - _minGridValue) / (_maxGridValue - _minGridValue);
+            if (transformFunc != null)
             {
-                float value = grid[x, y];
-                grid[x, y] = (value - _minGridValue) / (_maxGridValue - _minGridValue);
-                if (transformFunc != null)
-                {
-                    grid[x, y] = transformFunc(grid[x, y]);
-                }
+                grid[i] = transformFunc(grid[i]);
             }
         }
 
-        return grid;
+        return floatGrid;
     }
 
     /// <summary>
     /// Generate a single layer of noise.
     /// </summary>
+    /// <param name="octaveGridData"></param>
     /// <param name="steps"></param>
     /// <param name="posX"></param>
     /// <param name="posY"></param>
     /// <param name="gridSize"></param>
-    /// <returns></returns>
-    private float[,] GenerateNoiseLevel(int steps, int posX, int posY, int gridSize)
+    private void GenerateNoiseLevel(Span<float> octaveGridData, int steps, int posX, int posY, int gridSize)
     {
-        float[,] output = new float[gridSize, gridSize];
-
         for (int y = 0; y < gridSize; y++)
         {
             int py = y + posY;
@@ -113,11 +111,11 @@ public class PerlinNoiseGenerator
                 Vector2 v10 = GetVector(vx + 1, vy);
                 Vector2 v11 = GetVector(vx + 1, vy + 1);
 
-                output[x, y] = Interpolate(v00, v01, v10, v11, tx, ty);
+                int index = y + (x * gridSize);
+
+                octaveGridData[index] = Interpolate(v00, v01, v10, v11, tx, ty);
             }
         }
-
-        return output;
     }
 
     /// <summary>
