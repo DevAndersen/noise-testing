@@ -52,35 +52,43 @@ public class PerlinNoiseGenerator
         float[,] floatGrid = new float[size, size];
         Span<float> grid = MemoryMarshal.CreateSpan(ref floatGrid[0, 0], floatGrid.Length);
 
+        float[] rentedArray = ArrayPool<float>.Shared.Rent(size * size * octaves);
 
-        float[] octaveLayers = new float[size * size * octaves];
-
-        // Generate the noise octave layers.
-        for (int i = 0; i < octaves; i++)
+        try
         {
-            int steps = density / (int)float.Pow(2, i);
+            Span<float> octaveLayers = rentedArray.AsSpan()[..(size * size * octaves)];
 
-            int octaveSliceLength = size * size;
-
-            Span<float> octave = octaveLayers.AsSpan().Slice(octaveSliceLength * i, octaveSliceLength);
-            GenerateNoiseLevel(octave, steps, posX, posY, size);
-
-            // Accumulate the layers, with diminishing impact.
-            for (int j = 0; j < grid.Length; j++)
+            // Generate the noise octave layers.
+            for (int i = 0; i < octaves; i++)
             {
-                grid[j] += octave[j] * (1 / float.Pow(2, i));
+                int steps = density / (int)float.Pow(2, i);
+
+                int octaveSliceLength = size * size;
+
+                Span<float> octave = octaveLayers.Slice(octaveSliceLength * i, octaveSliceLength);
+                GenerateNoiseLevel(octave, steps, posX, posY, size);
+
+                // Accumulate the layers, with diminishing impact.
+                for (int j = 0; j < grid.Length; j++)
+                {
+                    grid[j] += octave[j] * (1 / float.Pow(2, i));
+                }
+            }
+
+            // Normalizes the grid to [0, 1], then apply the transform function if it has been defined.
+            for (int i = 0; i < grid.Length; i++)
+            {
+                float value = grid[i];
+                grid[i] = (value - _minGridValue) / (_maxGridValue - _minGridValue);
+                if (transformFunc != null)
+                {
+                    grid[i] = transformFunc(grid[i]);
+                }
             }
         }
-
-        // Normalizes the grid to [0, 1], then apply the transform function if it has been defined.
-        for (int i = 0; i < grid.Length; i++)
+        finally
         {
-            float value = grid[i];
-            grid[i] = (value - _minGridValue) / (_maxGridValue - _minGridValue);
-            if (transformFunc != null)
-            {
-                grid[i] = transformFunc(grid[i]);
-            }
+            ArrayPool<float>.Shared.Return(rentedArray);
         }
 
         return floatGrid;
