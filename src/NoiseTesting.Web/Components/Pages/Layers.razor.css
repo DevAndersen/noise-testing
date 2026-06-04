@@ -1,0 +1,33 @@
+﻿.layer-tiles {
+    display: flex;
+    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 256px);
+    gap: 8px;
+
+    & img {
+        margin-bottom: 8px;
+    }
+}
+
+.grid-tiles {
+    display: flex;
+    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(var(--columns), 256px);
+}
+
+.tile {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tile-name {
+    font-size: 18px;
+    text-align: center;
+}
+
+img {
+    border: 1px solid #000;
+}

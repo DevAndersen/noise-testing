@@ -2,7 +2,7 @@
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>Home</PageTitle>
-
+@*
 <div class="group-name">Grid</div>
 <div class="grid-tiles group" style="--columns: @_width">
 	@{
@@ -19,9 +19,50 @@
 	}
 
 </div>
+ *@
 
-@code
-{
-	private int _width = 2;
-	private int _height = 2;
-}
+ <div class="page-layout">
+
+	<div class="tile-grid-container">
+		<div class=tile-grid-wrapper>
+			<div class="tile-grid" style="--grid-width: @Width; --grid-height: @Height">
+				@for (int y = 0; y < Height; y++)
+				{
+					for (int x = 0; x < Width; x++)
+					{
+						int tileX = PosX + x;
+						int tileY = PosY + y;
+						byte[] imageBytes = GetImageBytes(x, y);
+
+						<div class="tile">
+							<img src="data:image/png;base64,@Convert.ToBase64String(imageBytes)" alt="Terrain tile @tileX X @tileY" />
+						</div>
+					}
+				}
+			</div>
+		</div>
+	</div>
+
+	<div class="controls-container">
+		<div class="controls-wrapper">
+			<div>
+				<label>Width</label>
+				<InputNumber @bind-Value="Width"></InputNumber>
+				<label>Height</label>
+				<InputNumber @bind-Value="Height"></InputNumber>
+			</div>
+			<div class="controls-buttons">
+				<button style="grid-area: up" @onclick="MoveUp">Up</button>
+				<button style="grid-area: left" @onclick="MoveLeft">Left</button>
+				<button style="grid-area: down" @onclick="MoveDown">Down</button>
+				<button style="grid-area: right" @onclick="MoveRight">Right</button>
+			</div>
+			<div>
+				<div>Position: @PosX X @PosY</div>
+				<label>Seed</label>
+				<InputNumber @bind-Value="Seed"></InputNumber>
+			</div>
+		</div>
+	</div>
+
+ </div>

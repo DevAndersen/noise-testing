@@ -2,9 +2,7 @@
 
 <PageTitle>Layers</PageTitle>
 
-<div class="group-name">Layers</div>
-<div class="layer-tiles group">
-
+<div class="layer-tiles">
 	@foreach ((string LayerName, byte[] ImageBytes) in GenerateNoiseImages(256, 0, 0))
 	{
 		<div class="tile">
@@ -12,5 +10,4 @@
 			<img src="data:image/png;base64,@Convert.ToBase64String(ImageBytes)" alt="Noise layer @LayerName" />
 		</div>
 	}
-
 </div>
