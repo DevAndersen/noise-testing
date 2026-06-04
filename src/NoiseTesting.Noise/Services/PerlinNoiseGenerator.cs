@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Buffers;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
@@ -44,6 +45,7 @@ public class PerlinNoiseGenerator
     /// <param name="octaves"></param>
     /// <param name="posX"></param>
     /// <param name="posY"></param>
+    /// <param name="transformFunc"></param>
     /// <returns></returns>
     public float[,] GenerateNoise(int size, int density, int octaves, int posX, int posY, Func<float, float>? transformFunc = null)
     {
@@ -94,28 +96,55 @@ public class PerlinNoiseGenerator
     /// <param name="gridSize"></param>
     private void GenerateNoiseLevel(Span<float> octaveGridData, int steps, int posX, int posY, int gridSize)
     {
-        for (int y = 0; y < gridSize; y++)
+        int vectorAreaStartX = posX / steps;
+        int vectorAreaStartY = posY / steps;
+        int vectorAreaEndX = (posX + gridSize - 1) / steps + 1;
+        int vectorAreaEndY = (posY + gridSize - 1) / steps + 1;
+        int vectorAreaWidth = vectorAreaEndX - vectorAreaStartX + 1;
+        int vectorAreaHeight = vectorAreaEndY - vectorAreaStartY + 1;
+
+        int vectorCount = vectorAreaWidth * vectorAreaHeight;
+        Vector2[] rentedArray = ArrayPool<Vector2>.Shared.Rent(vectorCount);
+
+        try
         {
-            int py = y + posY;
-            int vy = py / steps;
-            float ty = (float)(py % steps) / steps;
+            Span<Vector2> vectors = rentedArray.AsSpan()[..vectorCount];
 
-            for (int x = 0; x < gridSize; x++)
+            // Retrieve vectors, avoiding retrieving the same vector from the store multiple times.
+            for (int y = 0; y < vectorAreaHeight; y++)
             {
-                int px = x + posX;
-                int vx = px / steps;
-                float tx = (float)(px % steps) / steps;
+                for (int x = 0; x < vectorAreaWidth; x++)
+                {
+                    vectors[y * vectorAreaWidth + x] = GetVector(vectorAreaStartX + x, vectorAreaStartY + y);
+                }
+            }
 
-                Vector2 v00 = GetVector(vx, vy);
-                Vector2 v01 = GetVector(vx, vy + 1);
-                Vector2 v10 = GetVector(vx + 1, vy);
-                Vector2 v11 = GetVector(vx + 1, vy + 1);
+            for (int y = 0; y < gridSize; y++)
+            {
+                int py = y + posY;
+                int vy = py / steps - vectorAreaStartY;
+                float ty = (float)(py % steps) / steps;
 
-                int index = y + (x * gridSize);
+                for (int x = 0; x < gridSize; x++)
+                {
+                    int px = x + posX;
+                    int vx = px / steps - vectorAreaStartX;
+                    float tx = (float)(px % steps) / steps;
 
-                octaveGridData[index] = Interpolate(v00, v01, v10, v11, tx, ty);
+                    Vector2 v00 = vectors[vy * vectorAreaWidth + vx];
+                    Vector2 v01 = vectors[(vy + 1) * vectorAreaWidth + vx];
+                    Vector2 v10 = vectors[vy * vectorAreaWidth + (vx + 1)];
+                    Vector2 v11 = vectors[(vy + 1) * vectorAreaWidth + (vx + 1)];
+
+                    octaveGridData[y + (x * gridSize)] = Interpolate(v00, v01, v10, v11, tx, ty);
+                }
             }
         }
+        finally
+        {
+            ArrayPool<Vector2>.Shared.Return(rentedArray);
+        }
+
     }
 
     /// <summary>
