@@ -2,29 +2,11 @@
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>Home</PageTitle>
-@*
-<div class="group-name">Grid</div>
-<div class="grid-tiles group" style="--columns: @_width">
-	@{
-		int size = 256;
 
-		for (int y = 0; y < _height; y++)
-		{
-			for (int x = 0; x < _width; x++)
-			{
-				byte[] imageBytes = GenerateTerrainImages(size, x * size, y * size);
-				<img src="data:image/png;base64,@Convert.ToBase64String(imageBytes)" alt="Terrain tile" />
-			}
-		}
-	}
-
-</div>
- *@
-
- <div class="page-layout">
+<div class="page-layout">
 
 	<div class="tile-grid-container">
-		<div class=tile-grid-wrapper>
+		<div class="tile-grid-wrapper">
 			<div class="tile-grid" style="--grid-width: @Width; --grid-height: @Height">
 				@for (int y = 0; y < Height; y++)
 				{
@@ -32,11 +14,9 @@
 					{
 						int tileX = PosX + x;
 						int tileY = PosY + y;
-						byte[] imageBytes = GetImageBytes(x, y);
+						string imageUrl = $"api/tile?posX={tileX}&posY={tileY}&seed={Seed}";
 
-						<div class="tile">
-							<img src="data:image/png;base64,@Convert.ToBase64String(imageBytes)" alt="Terrain tile @tileX X @tileY" />
-						</div>
+						<div class="tile" style="--tile-url: url('@imageUrl')"></div>
 					}
 				}
 			</div>
@@ -65,4 +45,4 @@
 		</div>
 	</div>
 
- </div>
+</div>

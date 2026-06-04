@@ -28,6 +28,7 @@
     height: 256px;
     border: 1px solid #000;
     display: grid;
+    background: var(--tile-url), radial-gradient(circle, #737373 0%, #424242 100%);
 }
 
 .tile-content {

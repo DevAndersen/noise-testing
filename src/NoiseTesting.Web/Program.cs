@@ -1,10 +1,14 @@
+using NoiseTesting.Web;
 using NoiseTesting.Web.Components;
+using NoiseTesting.Web.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddSingleton<TileService>();
 
 WebApplication app = builder.Build();
 
@@ -19,5 +23,7 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.MapEndpoints();
 
 app.Run();

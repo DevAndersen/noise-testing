@@ -3,11 +3,11 @@
 <PageTitle>Layers</PageTitle>
 
 <div class="layer-tiles">
-	@foreach ((string LayerName, byte[] ImageBytes) in GenerateNoiseImages(256, 0, 0))
+	@foreach ((string layerName, byte[] imageBytes) in GenerateNoiseImages(256, 0, 0))
 	{
 		<div class="tile">
-			<div class="tile-name">@LayerName</div>
-			<img src="data:image/png;base64,@Convert.ToBase64String(ImageBytes)" alt="Noise layer @LayerName" />
+			<div class="tile-name">@layerName</div>
+			<img src="data:image/png;base64,@Convert.ToBase64String(imageBytes)" alt="Noise layer @layerName" />
 		</div>
 	}
 </div>

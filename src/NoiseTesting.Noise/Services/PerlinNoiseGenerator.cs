@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Collections.Concurrent;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -28,7 +29,7 @@ public class PerlinNoiseGenerator
     /// <summary>
     /// Store for calculated noise vectors.
     /// </summary>
-    private readonly Dictionary<Point, Vector2> _vectorStore = [];
+    private readonly ConcurrentDictionary<Point, Vector2> _vectorStore = [];
 
     private readonly int _seed;
 
