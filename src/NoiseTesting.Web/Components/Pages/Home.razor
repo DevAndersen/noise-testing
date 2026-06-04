@@ -1,21 +1,9 @@
 ﻿@page "/"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>Home</PageTitle>
 
-<div class="group-name">Layers</div>
-<div class="layer-tiles group">
-
-	@foreach ((string LayerName, byte[] ImageBytes) in GenerateNoiseImages(256, 0, 0))
-	{
-		<div class="tile">
-			<div class="tile-name">@LayerName</div>
-			<img src="data:image/png;base64,@Convert.ToBase64String(ImageBytes)" alt="Noise layer @LayerName" />
-		</div>
-	}
-
-</div>
-
-<div class="group-name">Grids</div>
+<div class="group-name">Grid</div>
 <div class="grid-tiles group" style="--columns: @_width">
 	@{
 		int size = 256;
