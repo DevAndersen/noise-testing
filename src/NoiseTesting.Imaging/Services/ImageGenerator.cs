@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using System.Runtime.InteropServices;
 
 namespace NoiseTesting.Imaging.Services;
 
@@ -8,13 +9,17 @@ public static class ImageGenerator
     {
         using SKBitmap bitmap = new SKBitmap(grid.GetLength(0), grid.GetLength(1));
 
-        for (int y = 0; y < grid.GetLength(1); y++)
+        Span<float> floats = MemoryMarshal.CreateSpan(ref grid[0, 0], grid.Length);
+        Span<SKColor> pixels = MemoryMarshal.Cast<byte, SKColor>(bitmap.GetPixelSpan());
+
+        for (int i = 0; i < pixels.Length; i++)
         {
-            for (int x = 0; x < grid.GetLength(0); x++)
-            {
-                float value = grid[x, y];
-                bitmap.SetPixel(x, y, colorFunc(x, y, value));
-            }
+            // Flip the x- and y axis.
+            int x = i % grid.GetLength(0);
+            int y = i / grid.GetLength(0);
+            int j = y + (x * grid.GetLength(0));
+
+            pixels[j] = colorFunc(0, 0, floats[i]);
         }
 
         using SKImage image = SKImage.FromBitmap(bitmap);
