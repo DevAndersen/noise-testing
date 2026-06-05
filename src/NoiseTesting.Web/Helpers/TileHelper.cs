@@ -112,7 +112,7 @@ public static class TileHelper
     }
 
     /// <summary>
-    /// Sigmoid function with adjustable multiplier (how steep the curve is), bias (shifts the middle point of the curve), minimum, and maximum.
+    /// Sigmoid function with adjustable multiplier (how steep the curve is), bias (horizontally shifts the middle point of the curve), minimum, and maximum.
     /// </summary>
     /// <param name="x"></param>
     /// <param name="mult"></param>
