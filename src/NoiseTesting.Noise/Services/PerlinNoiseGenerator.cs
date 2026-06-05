@@ -170,23 +170,21 @@ public class PerlinNoiseGenerator
             int tileX = NegativeSafeDivision(x, _tileSize);
             int tileY = NegativeSafeDivision(y, _tileSize);
 
-            Vector2[,] vectors = new Vector2[_tileSize, _tileSize];
-
-            Span<Vector2> vectorSpan = MemoryMarshal.CreateSpan(ref vectors[0, 0], vectors.Length);
+            Span<Vector2> vectorSpan = stackalloc Vector2[_tileSize * _tileSize];
             Span<byte> workBuffer = stackalloc byte[MD5.HashSizeInBytes];
             PopulateNoiseVectors(vectorSpan, workBuffer, [tileX, tileY, _seed]);
 
-            for (int relativeY = 0; relativeY < _tileSize; relativeY++)
+            for (int i = 0; i < vectorSpan.Length; i++)
             {
-                for (int relativeX = 0; relativeX < _tileSize; relativeX++)
-                {
-                    int vectorX = (tileX * _tileSize) + relativeX;
-                    int vectorY = (tileY * _tileSize) + relativeY;
-                    _vectorStore[new Point(vectorX, vectorY)] = vectors[relativeX, relativeY];
-                }
+                int vectorX = (tileX * _tileSize) + (i / _tileSize);
+                int vectorY = (tileY * _tileSize) + (i % _tileSize);
+
+                _vectorStore[new Point(vectorX, vectorY)] = vectorSpan[i];
             }
 
-            vector = vectors[NegativeSafeRemainder(x, _tileSize), NegativeSafeRemainder(y, _tileSize)];
+            int rx = NegativeSafeRemainder(x, _tileSize);
+            int ry = NegativeSafeRemainder(y, _tileSize);
+            vector = vectorSpan[ry + (rx * _tileSize)];
         }
 
         return vector;
