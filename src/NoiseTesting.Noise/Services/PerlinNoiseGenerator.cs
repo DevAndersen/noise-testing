@@ -105,10 +105,10 @@ public class PerlinNoiseGenerator
     /// <param name="gridSize"></param>
     private void GenerateNoiseLevel(Span<float> octaveGridData, int steps, int posX, int posY, int gridSize)
     {
-        int vectorAreaStartX = posX / steps;
-        int vectorAreaStartY = posY / steps;
-        int vectorAreaEndX = (posX + gridSize - 1) / steps + 1;
-        int vectorAreaEndY = (posY + gridSize - 1) / steps + 1;
+        int vectorAreaStartX = NegativeSafeDivision(posX, steps);
+        int vectorAreaStartY = NegativeSafeDivision(posY, steps);
+        int vectorAreaEndX = NegativeSafeDivision(posX + gridSize - 1, steps) + 1;
+        int vectorAreaEndY = NegativeSafeDivision(posY + gridSize - 1, steps) + 1;
         int vectorAreaWidth = vectorAreaEndX - vectorAreaStartX + 1;
         int vectorAreaHeight = vectorAreaEndY - vectorAreaStartY + 1;
 
@@ -131,14 +131,14 @@ public class PerlinNoiseGenerator
             for (int y = 0; y < gridSize; y++)
             {
                 int py = y + posY;
-                int vy = py / steps - vectorAreaStartY;
-                float ty = (float)(py % steps) / steps;
+                int vy = NegativeSafeDivision(py, steps) - vectorAreaStartY;
+                float ty = (float)NegativeSafeRemainder(py, steps) / steps;
 
                 for (int x = 0; x < gridSize; x++)
                 {
                     int px = x + posX;
-                    int vx = px / steps - vectorAreaStartX;
-                    float tx = (float)(px % steps) / steps;
+                    int vx = NegativeSafeDivision(px, steps) - vectorAreaStartX;
+                    float tx = (float)NegativeSafeRemainder(px, steps) / steps;
 
                     Vector2 v00 = vectors[vy * vectorAreaWidth + vx];
                     Vector2 v01 = vectors[(vy + 1) * vectorAreaWidth + vx];
@@ -167,8 +167,8 @@ public class PerlinNoiseGenerator
         // Generate the vector tile if it has not yet been generated.
         if (!_vectorStore.TryGetValue(new Point(x, y), out Vector2 vector))
         {
-            int tileX = x / _tileSize;
-            int tileY = y / _tileSize;
+            int tileX = NegativeSafeDivision(x, _tileSize);
+            int tileY = NegativeSafeDivision(y, _tileSize);
 
             Vector2[,] vectors = new Vector2[_tileSize, _tileSize];
 
@@ -186,7 +186,7 @@ public class PerlinNoiseGenerator
                 }
             }
 
-            vector = vectors[x % _tileSize, y % _tileSize];
+            vector = vectors[NegativeSafeRemainder(x, _tileSize), NegativeSafeRemainder(y, _tileSize)];
         }
 
         return vector;
@@ -256,6 +256,34 @@ public class PerlinNoiseGenerator
                 float.Sin(angle),
                 float.Cos(angle));
         }
+    }
+
+    /// <summary>
+    /// Divides integers as doubles.
+    /// Ensures division is handles as expected when the dividend is negative.
+    /// </summary>
+    /// <param name="dividend"></param>
+    /// <param name="divisor"></param>
+    /// <returns></returns>
+    private static int NegativeSafeDivision(int dividend, int divisor)
+    {
+        return (int)double.Floor((double)dividend / divisor);
+    }
+
+    /// <summary>
+    /// Determines the remainder of integers as doubles.
+    /// Ensures remainder is handles as expected when the dividend is negative.
+    /// </summary>
+    /// <param name="dividend"></param>
+    /// <param name="divisor"></param>
+    /// <returns></returns>
+    private static int NegativeSafeRemainder(int dividend, int divisor)
+    {
+        int remainder = dividend % divisor;
+
+        return remainder < 0
+            ? remainder + divisor
+            : remainder;
     }
 
     private readonly record struct Point(int X, int Y);
