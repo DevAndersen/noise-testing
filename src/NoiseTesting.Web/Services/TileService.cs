@@ -22,7 +22,7 @@ public class TileService
         return bytes;
     }
 
-    private byte[] GenerateTerrainImages(int size, int posX, int posY, int seed)
+    private static byte[] GenerateTerrainImages(int size, int posX, int posY, int seed)
     {
         NoiseGeneratorSet noise = GetNoiseGeneratorSet(seed);
 
@@ -38,10 +38,11 @@ public class TileService
 
         float[,] riverNoise = noise.RiverNoiseGenerator.GenerateNoise(size, 64, 5, posX, posY, f => Sigmoid(f, 2.5F, 0.0F));
 
-        return ImageGenerator.Generate(color, (x, y, value) => TerrainTemperatureColor(value, temperatureNoise[x, y], riverNoise[x, y]));
+        //return ImageGenerator.Generate(color, (x, y, value) => TerrainTemperatureColor(value, temperatureNoise[x, y], riverNoise[x, y]));
+        return ImageGenerator.Generate(color, (_, _, value) => TerrainColor(value));
     }
 
-    private NoiseGeneratorSet GetNoiseGeneratorSet(int seed)
+    private static NoiseGeneratorSet GetNoiseGeneratorSet(int seed)
     {
         if (!_generatorSets.TryGetValue(seed, out NoiseGeneratorSet? set))
         {
