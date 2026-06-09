@@ -257,8 +257,7 @@ public class PerlinNoiseGenerator
     }
 
     /// <summary>
-    /// Divides integers as doubles.
-    /// Ensures division is handles as expected when the dividend is negative.
+    /// Divides integers as doubles, ensures division is handles as expected when the dividend is negative.
     /// </summary>
     /// <param name="dividend"></param>
     /// <param name="divisor"></param>
@@ -269,8 +268,7 @@ public class PerlinNoiseGenerator
     }
 
     /// <summary>
-    /// Determines the remainder of integers as doubles.
-    /// Ensures remainder is handles as expected when the dividend is negative.
+    /// Determines the remainder of integers, ensures remainder is handles as expected when the dividend is negative.
     /// </summary>
     /// <param name="dividend"></param>
     /// <param name="divisor"></param>
