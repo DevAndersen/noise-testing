@@ -7,6 +7,12 @@ namespace NoiseTesting.Noise.Services;
 public class PerlinNoiseGenerator3
 {
     /// <summary>
+    /// The size of each vector tile.
+    /// Square root of 16, (the number of bytes of an MD5 digest), divided by 2 (bytes used to generate each).
+    /// </summary>
+    private static readonly int _tileSize = (int)float.Sqrt(MD5.HashSizeInBytes) / 2;
+
+    /// <summary>
     /// Populates <paramref name="vectors"/> with pseudo-random 3D unit vectors, based on the elements of <paramref name="input"/>.
     /// </summary>
     /// <remarks>
