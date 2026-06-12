@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 
 namespace NoiseTesting.Noise.Services;
 
-public class PerlinNoiseGenerator
+public class PerlinNoiseGenerator2
 {
     /// <summary>
     /// The size of each vector tile.
@@ -29,11 +29,11 @@ public class PerlinNoiseGenerator
     /// <summary>
     /// Store for calculated noise vectors.
     /// </summary>
-    private readonly ConcurrentDictionary<Point, Vector2> _vectorStore = [];
+    private readonly ConcurrentDictionary<Point2, Vector2> _vectorStore = [];
 
     private readonly int _seed;
 
-    public PerlinNoiseGenerator(int seed)
+    public PerlinNoiseGenerator2(int seed)
     {
         _seed = seed;
     }
@@ -157,7 +157,7 @@ public class PerlinNoiseGenerator
     }
 
     /// <summary>
-    /// Returns the vector for position <c>[x, y]</c>, generating it not yet defined.
+    /// Returns the vector for position <c>[x, y]</c>, generating it if it has not yet been defined.
     /// </summary>
     /// <param name="x"></param>
     /// <param name="y"></param>
@@ -165,7 +165,7 @@ public class PerlinNoiseGenerator
     private Vector2 GetVector(int x, int y)
     {
         // Generate the vector tile if it has not yet been generated.
-        if (!_vectorStore.TryGetValue(new Point(x, y), out Vector2 vector))
+        if (!_vectorStore.TryGetValue(new Point2(x, y), out Vector2 vector))
         {
             int tileX = NegativeSafeDivision(x, _tileSize);
             int tileY = NegativeSafeDivision(y, _tileSize);
@@ -179,7 +179,7 @@ public class PerlinNoiseGenerator
                 int vectorX = (tileX * _tileSize) + (i / _tileSize);
                 int vectorY = (tileY * _tileSize) + (i % _tileSize);
 
-                _vectorStore[new Point(vectorX, vectorY)] = vectorSpan[i];
+                _vectorStore[new Point2(vectorX, vectorY)] = vectorSpan[i];
             }
 
             int rx = NegativeSafeRemainder(x, _tileSize);
@@ -228,7 +228,7 @@ public class PerlinNoiseGenerator
     }
 
     /// <summary>
-    /// Populates <paramref name="vectors"/> with pseudo-random unit vectors, based on the elements of <paramref name="input"/>.
+    /// Populates <paramref name="vectors"/> with pseudo-random 2D unit vectors, based on the elements of <paramref name="input"/>.
     /// </summary>
     /// <remarks>
     /// Both components of each vector is derived from a single byte value.
@@ -282,5 +282,5 @@ public class PerlinNoiseGenerator
             : remainder;
     }
 
-    private readonly record struct Point(int X, int Y);
+    private readonly record struct Point2(int X, int Y);
 }

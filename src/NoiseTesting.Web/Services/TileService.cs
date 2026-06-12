@@ -58,26 +58,26 @@ public class TileService
     {
         public int Seed { get; }
 
-        public PerlinNoiseGenerator TerrainNoiseGenerator { get; }
+        public PerlinNoiseGenerator2 TerrainNoiseGenerator { get; }
 
-        public PerlinNoiseGenerator LandNoiseGenerator { get; }
+        public PerlinNoiseGenerator2 LandNoiseGenerator { get; }
 
-        public PerlinNoiseGenerator MountainNoiseGenerator { get; }
+        public PerlinNoiseGenerator2 MountainNoiseGenerator { get; }
 
-        public PerlinNoiseGenerator TemperatureNoiseGenerator { get; }
+        public PerlinNoiseGenerator2 TemperatureNoiseGenerator { get; }
 
-        public PerlinNoiseGenerator RiverNoiseGenerator { get; }
+        public PerlinNoiseGenerator2 RiverNoiseGenerator { get; }
 
         public NoiseGeneratorSet(int seed)
         {
             Seed = seed;
 
             Random rand = new Random(seed);
-            TerrainNoiseGenerator = new PerlinNoiseGenerator(rand.Next());
-            LandNoiseGenerator = new PerlinNoiseGenerator(rand.Next());
-            MountainNoiseGenerator = new PerlinNoiseGenerator(rand.Next());
-            TemperatureNoiseGenerator = new PerlinNoiseGenerator(rand.Next());
-            RiverNoiseGenerator = new PerlinNoiseGenerator(rand.Next());
+            TerrainNoiseGenerator = new PerlinNoiseGenerator2(rand.Next());
+            LandNoiseGenerator = new PerlinNoiseGenerator2(rand.Next());
+            MountainNoiseGenerator = new PerlinNoiseGenerator2(rand.Next());
+            TemperatureNoiseGenerator = new PerlinNoiseGenerator2(rand.Next());
+            RiverNoiseGenerator = new PerlinNoiseGenerator2(rand.Next());
         }
     }
 }

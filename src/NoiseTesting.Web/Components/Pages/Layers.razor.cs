@@ -6,11 +6,11 @@ namespace NoiseTesting.Web.Components.Pages;
 
 public partial class Layers
 {
-    private static readonly PerlinNoiseGenerator _terrainNoiseGenerator = new PerlinNoiseGenerator(1);
-    private static readonly PerlinNoiseGenerator _landNoiseGenerator = new PerlinNoiseGenerator(3);
-    private static readonly PerlinNoiseGenerator _mountainNoiseGenerator = new PerlinNoiseGenerator(4);
-    private static readonly PerlinNoiseGenerator _temperatureNoiseGenerator = new PerlinNoiseGenerator(5);
-    private static readonly PerlinNoiseGenerator _riverNoiseGenerator = new PerlinNoiseGenerator(7);
+    private static readonly PerlinNoiseGenerator2 _terrainNoiseGenerator = new PerlinNoiseGenerator2(1);
+    private static readonly PerlinNoiseGenerator2 _landNoiseGenerator = new PerlinNoiseGenerator2(3);
+    private static readonly PerlinNoiseGenerator2 _mountainNoiseGenerator = new PerlinNoiseGenerator2(4);
+    private static readonly PerlinNoiseGenerator2 _temperatureNoiseGenerator = new PerlinNoiseGenerator2(5);
+    private static readonly PerlinNoiseGenerator2 _riverNoiseGenerator = new PerlinNoiseGenerator2(7);
 
     private static IEnumerable<ImageLayer> GenerateNoiseImages(int size, int posX, int posY)
     {
